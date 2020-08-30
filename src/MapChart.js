@@ -39,6 +39,9 @@ const MapChart = ({ setTooltipContent }) => {
             <TableRow>
                     <TableCell>{track.name}</TableCell>
                     <TableCell>{track.artist.name}</TableCell>
+                    <TableCell>
+                      <a href={track.url} target="blank">Song Link</a>
+                    </TableCell>
             </TableRow>
           )
           
