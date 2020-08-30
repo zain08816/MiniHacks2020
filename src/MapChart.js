@@ -5,6 +5,7 @@ import {
   Geographies,
   Geography
 } from "react-simple-maps";
+import { TableCell, TableRow } from '@material-ui/core';
 const bent = require('bent');
 const getJSON = bent('json');
 const api_key = require('./api_key.js');
@@ -19,16 +20,31 @@ const MapChart = ({ setTooltipContent }) => {
 
   const [name, setName] = useState("");
   const [res, setRes] = useState("");
-
+  const [rows, setRows] = useState([]);
+  
   
   const handleClick = name => () => {
     // setName(name.toLowerCase())
     // setName(`${base}&country=${name.toLowerCase()}`)
+    
     getJSON(base+name.toLowerCase())
       .then(d => {
         setRes(process(d));
+        let tracks = d.tracks.track
+        let cell = []
+        tracks.forEach((track, index) => {
+          // console.log(track)
+          
+          cell.push(
+            <TableRow>
+                    <TableCell>{track.name}</TableCell>
+                    <TableCell>{track.artist.name}</TableCell>
+            </TableRow>
+          )
+          
+        })
+        setRows(cell);
       })
-
   }
 
   const process = trackData => {
@@ -76,9 +92,9 @@ const MapChart = ({ setTooltipContent }) => {
         </ZoomableGroup>
       </ComposableMap>
       <div>
-        <p>
-          {res}
-        </p>   
+        <tbody>
+          {rows}
+        </tbody>   
       </div>
     </>
   );
