@@ -6,12 +6,13 @@ import {
   Geography
 } from "react-simple-maps";
 const bent = require('bent');
-const getBuffer = bent('buffer')
+const getJSON = bent('json');
+const api_key = require('./api_key.js');
 
 const geoUrl =
   "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
-const base = 'https://spotifycharts.com/regional/COUNTRY/daily/latest'
+const base = `https://ws.audioscrobbler.com/2.0/?method=geo.gettoptracks&api_key=${api_key}&format=json&country=`
 
 
 const MapChart = ({ setTooltipContent }) => {
@@ -23,7 +24,7 @@ const MapChart = ({ setTooltipContent }) => {
   const handleClick = name => () => {
     // setName(name.toLowerCase())
     // setName(`${base}&country=${name.toLowerCase()}`)
-    getBuffer(base.replace('COUNTRY', name.toLowerCase()))
+    getJSON(base+name.toLowerCase())
       .then(d => {
         setRes(process(d));
       })
@@ -47,13 +48,13 @@ const MapChart = ({ setTooltipContent }) => {
                   key={geo.rsmKey}
                   geography={geo}
                   onMouseEnter={() => {
-                    const { NAME} = geo.properties;
+                    const { NAME } = geo.properties;
                     setTooltipContent(`${NAME}`);
                   }}
                   onMouseLeave={() => {
                     setTooltipContent("");
                   }}
-                  onClick={handleClick(geo.properties.ISO_A2)}
+                  onClick={handleClick(geo.properties.NAME_LONG)}
                   style={{
                     default: {
                       fill: "#D6D6DA",
@@ -76,7 +77,7 @@ const MapChart = ({ setTooltipContent }) => {
       </ComposableMap>
       <div>
         <p>
-          ""
+          {res}
         </p>   
       </div>
     </>
