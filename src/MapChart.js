@@ -6,30 +6,35 @@ import {
   Geography
 } from "react-simple-maps";
 const bent = require('bent');
-const getJSON = bent('json');
-const API_KEY = require('./api_key.js');
+const getBuffer = bent('buffer')
 
 const geoUrl =
   "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
-const base = `https://ws.audioscrobbler.com/2.0/?method=geo.gettoptracks&format=json&api_key=${API_KEY}`
+const base = 'https://spotifycharts.com/regional/COUNTRY/daily/latest'
 
 
 const MapChart = ({ setTooltipContent }) => {
 
   const [name, setName] = useState("");
-  const [json, setJson] = useState("");
+  const [res, setRes] = useState("");
 
   
   const handleClick = name => () => {
-    console.log(name)
     // setName(name.toLowerCase())
-    console.log(`${base}&country=${name}`)
-    setName(`${base}&country=${name.toLowerCase()}`)
-    setJson(JSON.stringify(getJSON(`${base}&country=${name.toLowerCase()}`)))
+    // setName(`${base}&country=${name.toLowerCase()}`)
+    getBuffer(base.replace('COUNTRY', name.toLowerCase()))
+      .then(d => {
+        setRes(process(d));
+      })
 
   }
 
+  const process = trackData => {
+    if( !trackData.tracks )
+      return ""
+    return trackData.tracks.track.map(t => `${t.name} by ${t.artist.name}`).join(', ');
+  }
 
   return (
     <>
@@ -48,7 +53,7 @@ const MapChart = ({ setTooltipContent }) => {
                   onMouseLeave={() => {
                     setTooltipContent("");
                   }}
-                  onClick={handleClick(geo.properties.NAME_LONG)}
+                  onClick={handleClick(geo.properties.ISO_A2)}
                   style={{
                     default: {
                       fill: "#D6D6DA",
@@ -71,7 +76,7 @@ const MapChart = ({ setTooltipContent }) => {
       </ComposableMap>
       <div>
         <p>
-        {name}
+          ""
         </p>   
       </div>
     </>
